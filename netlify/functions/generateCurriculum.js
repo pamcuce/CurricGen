@@ -1,24 +1,41 @@
 // Located at: netlify/functions/generateCurriculum.js
+// This new version uses a Service Account for authentication.
+
+// Import the GoogleAuth library, which will handle authentication
+const { GoogleAuth } = require('google-auth-library');
 
 exports.handler = async function (event, context) {
-  // Only allow POST requests
+  // 1. Check for POST request
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
+    // 2. Parse the incoming prompt
     const { prompt } = JSON.parse(event.body);
-    const apiKey = process.env.GEMINI_API_KEY;
-
-    if (!apiKey) {
-      throw new Error("API key is not configured.");
-    }
-     if (!prompt) {
+    if (!prompt) {
       throw new Error("No prompt was provided.");
     }
+    
+    // --- NEW AUTHENTICATION LOGIC ---
+    
+    // 3. Initialize the authentication client.
+    // It will automatically find and use the GOOGLE_APPLICATION_CREDENTIALS_JSON 
+    // environment variable you created in Netlify.
+    const auth = new GoogleAuth({
+      scopes: 'https://www.googleapis.com/auth/cloud-platform'
+    });
+    
+    // 4. Get a temporary access token.
+    const client = await auth.getClient();
+    const accessToken = (await client.getAccessToken()).token;
+    
+    // 5. Get the Project ID from the auth client to build the URL.
+    const projectId = await auth.getProjectId();
+    const model = 'gemini-1.5-pro'; // You can use 'gemini-1.5-pro' now!
+    const apiUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/${model}:streamGenerateContent`;
 
-    // Using the more powerful and knowledgeable Pro model
-const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+    // --- END OF NEW AUTHENTICATION LOGIC ---
 
     const payload = {
       contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -29,9 +46,13 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1
       }
     };
 
+    // 6. Make the API call using the Access Token
     const apiResponse = await fetch(apiUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Authorization': `Bearer ${accessToken}`, // Use the token for authorization
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(payload)
     });
 
@@ -42,16 +63,22 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1
     }
 
     const result = await apiResponse.json();
+    
+    // The response from a streaming API is an array of chunks. We need to combine them.
+    let curriculumText = "";
+    result.forEach(chunk => {
+        if (chunk.candidates && chunk.candidates[0].content.parts[0].text) {
+            curriculumText += chunk.candidates[0].content.parts[0].text;
+        }
+    });
 
-    if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
-        const curriculumText = result.candidates[0].content.parts[0].text;
+    if (curriculumText) {
         return {
             statusCode: 200,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ curriculum: curriculumText })
         };
     } else {
-        // Handle cases where the model returns no candidates (e.g., safety settings)
         console.error("Invalid response structure from API:", result);
         return { statusCode: 500, body: JSON.stringify({ error: "Received an invalid or empty response from the AI model." }) };
     }
