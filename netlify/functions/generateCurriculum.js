@@ -1,41 +1,45 @@
 // Located at: netlify/functions/generateCurriculum.js
-// This new version uses a Service Account for authentication.
+// FINAL VERSION: This code explicitly loads credentials from the environment variable.
 
-// Import the GoogleAuth library, which will handle authentication
 const { GoogleAuth } = require('google-auth-library');
 
 exports.handler = async function (event, context) {
-  // 1. Check for POST request
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
-    // 2. Parse the incoming prompt
     const { prompt } = JSON.parse(event.body);
     if (!prompt) {
       throw new Error("No prompt was provided.");
     }
     
-    // --- NEW AUTHENTICATION LOGIC ---
+    // --- THIS IS THE CRUCIAL FIX ---
     
-    // 3. Initialize the authentication client.
-    // It will automatically find and use the GOOGLE_APPLICATION_CREDENTIALS_JSON 
-    // environment variable you created in Netlify.
+    // 3. Get the JSON credentials from the environment variable you created.
+    const credentialsJson = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+    if (!credentialsJson) {
+      // This will provide a clear error if the environment variable is not set correctly.
+      throw new Error("The GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set.");
+    }
+    // Parse the JSON string into a JavaScript object.
+    const credentials = JSON.parse(credentialsJson);
+
+    // 4. Initialize the authentication client, passing the credentials DIRECTLY.
     const auth = new GoogleAuth({
+      credentials, // Pass the parsed credentials object right here
       scopes: 'https://www.googleapis.com/auth/cloud-platform'
     });
     
-    // 4. Get a temporary access token.
+    // --- END OF THE FIX ---
+
+    // 5. Get a temporary access token.
     const client = await auth.getClient();
     const accessToken = (await client.getAccessToken()).token;
     
-    // 5. Get the Project ID from the auth client to build the URL.
     const projectId = await auth.getProjectId();
-    const model = 'gemini-1.5-pro'; // You can use 'gemini-1.5-pro' now!
+    const model = 'gemini-1.5-pro';
     const apiUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/${model}:streamGenerateContent`;
-
-    // --- END OF NEW AUTHENTICATION LOGIC ---
 
     const payload = {
       contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -46,11 +50,10 @@ exports.handler = async function (event, context) {
       }
     };
 
-    // 6. Make the API call using the Access Token
     const apiResponse = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${accessToken}`, // Use the token for authorization
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload)
@@ -64,7 +67,6 @@ exports.handler = async function (event, context) {
 
     const result = await apiResponse.json();
     
-    // The response from a streaming API is an array of chunks. We need to combine them.
     let curriculumText = "";
     result.forEach(chunk => {
         if (chunk.candidates && chunk.candidates[0].content.parts[0].text) {
