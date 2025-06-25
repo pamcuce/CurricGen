@@ -17,7 +17,8 @@ exports.handler = async function (event, context) {
       throw new Error("No prompt was provided.");
     }
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // Using the more powerful and knowledgeable Pro model
+const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
 
     const payload = {
       contents: [{ role: "user", parts: [{ text: prompt }] }],
