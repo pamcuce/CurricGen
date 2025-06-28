@@ -120,14 +120,14 @@
             const parseAndRenderMarkdown = (markdownText) => {
                 // This is a simple parser. More complex markdown would need a library.
                  return markdownText
-                    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-                    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-                    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-                    .replace(/^\* (.*$)/gim, '<ul><li>$1</li></ul>')
-                    .replace(/<\/ul>\n<ul>/gim, '') // Fix for consecutive list items
-                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\n/g, '<br>');
+                      .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                      .replace(/^\* (.*$)/gim, '<ul><li>$1</li></ul>')
+                      .replace(/<\/ul>\n<ul>/gim, '') // Fix for consecutive list items
+                      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                      .replace(/\n/g, '<br>');
             };
             
             const generateCurriculum = async () => {
@@ -195,7 +195,7 @@
 - ### Preparing for the Job Market
 - List 3-5 essential non-technical tips for a ${jobTitle}.
 - Include topics like portfolio presentation, networking on platforms like LinkedIn, and common interview question patterns for this role.
-- Provide one link to a high-quality resource for technical interview preparation like a guide on LeetCode, a YouTube series on system design interviews or others.';
+- Provide one link to a high-quality resource for technical interview preparation like a guide on LeetCode, a YouTube series on system design interviews or others.`;
 
                     // **THIS IS THE CRUCIAL CHANGE**
                     // We call our own secure function, not Google's API directly.
