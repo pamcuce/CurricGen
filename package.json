@@ -1,14 +1,15 @@
-{
-  "name": "syllabus-generator",
-  "version": "1.0.0",
-  "description": "Netlify function to call Google AI",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "google-auth-library": "^9.11.0"
-  }
-}
+{                                                                                           │
+ │     2   "name": "syllabus-generator",                                                             │
+ │     3   "version": "1.0.0",                                                                       │
+ │     4   "description": "Netlify function to call Google AI",                                      │
+ │     5   "main": "index.js",                                                                       │
+ │     6   "scripts": {                                                                              │
+ │     7     "test": "echo \"Error: no test specified\" && exit 1"                                   │
+ │     8   },                                                                                        │
+ │     9   "author": "",                                                                             │
+ │    10   "license": "ISC",                                                                         │
+ │    11   "dependencies": {                                                                         │
+ │    12     "google-auth-library": "^9.11.0",                                                       │
+ │    13     "node-fetch": "^2.6.1"                                                                  │
+ │    14   }                                                                                         │
+ │    15 }      
