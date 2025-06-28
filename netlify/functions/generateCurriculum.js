@@ -1,5 +1,5 @@
 // Located at: netlify/functions/generateCurriculum.js
-
+const fetch = require('node-fetch');
 exports.handler = async function (event, context) {
   // Only allow POST requests
   if (event.httpMethod !== 'POST') {
