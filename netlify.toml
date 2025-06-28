@@ -1,5 +1,4 @@
 [functions]                                                                                  
    directory = "netlify/functions"                                                            
                                                                                                
- [functions.generateCurriculum]                                                               
-   timeout = 25 
+  
