@@ -147,15 +147,71 @@
                 try {
                     // Step 1: Skill Analysis
                     updateStepUI(1, 'loading');
-                    const prompt = `Based on your extensive knowledge of job requirements and educational programs, act as an expert curriculum designer. A user wants to train to become a "${jobTitle}". Your first task is to perform a detailed analysis and generate a comprehensive, structured learning curriculum for this role.
-
-Follow these steps precisely:
-1.  **Analyze the Role:** Identify the core competencies, key skills (technical and soft), and common tools/technologies required for a "${jobTitle}".
-2.  **Structure Modules:** Organize these skills into a logical sequence of progressive modules, starting from foundational knowledge and moving to advanced topics. Name each module clearly (e.g., "Module 1: Foundational Concepts", "Module 2: Core Technical Skills", etc.).
-3.  **Find Free Resources:** For EACH skill or tool within a module, find one high-quality, free online resource (e.g., a specific tutorial from freeCodeCamp, a documentation page, a video series on YouTube, a course from Khan Academy, an MIT OpenCourseware class). Provide a direct link.
-4.  **Add a Capstone Project:** Conclude with a relevant capstone project idea that would allow the user to build a portfolio piece.
-
-Format the entire output as a single Markdown document. Use ## for module titles and * for each skill/resource pair.`;
+                     const prompt = `Act as an expert career coach   │
+ │           and curriculum designer. Your goal is to create a comprehensive, highly-structured,     │
+ │           and actionable learning roadmap for a user aspiring to become a "${jobTitle}". The      │
+ │           curriculum should be optimized for a self-learner and focus exclusively on              │
+ │           high-quality, free online resources.                                                    │
+ │                                                                                                │
+ │         + **Output Format:**                                                                      │
+           + - The entire output must be a single Markdown document.                                 │
+ │    154  + - Use clear and encouraging language.                                                   │
+ │    155  + - Use ## for main section titles and ### for module titles.                             │
+ │    156  + - Use * for list items (skills, resources, project steps).                              │
+ │    157  + - Bold key terms using **term**.                                                        │
+ │    158  +                                                                                         │
+ │    159  + **Curriculum Structure:**                                                               │
+ │    160  +                                                                                         │
+ │    161  + ## 📝 Introduction to the ${jobTitle} Role                                              │
+ │    162  + - Briefly describe the role, its importance, and the typical responsibilities.          │
+ │    163  + - Outline the learning journey ahead to set expectations.                               │
+ │    164  +                                                                                         │
+ │    165  + ## 🧠 Foundational Knowledge                                                            │
+ │    166  + - Create 2-5 modules for the absolute fundamentals.                                     │
+ │    167  + - For each module:                                                                      │
+ │    168  +     - ### Module X: [Module Name]                                                       │
+ │    169  +     - Provide a 2-4 sentence description of the module's objective.                     │
+ │    170  +     - List 3-5 core concepts or skills.                                                 │
+ │    171  +     - For each concept/skill, provide a direct links to a premier free resources (e.g.,   │
+ │           specific university course pages like CS50, freeCodeCamp articles, official             │
+ │           documentation, renowned YouTube tutorials).                                             │
+ │    172  +     - Example: * **Data Structures:** [Link to a relevant freeCodeCamp guide]           │
+ │    173  +                                                                                         │
+ │    174  + ## 🛠️ Core Technical Skills & Tooling                                                  │
+ │    175  + - Create 2-4 modules focused on the primary technical skills and essential tools for a  │
+ │           ${jobTitle}.                                                                            │
+ │    176  + - Structure these modules logically, from intermediate to advanced.                     │
+ │    177  + - For each module:                                                                      │
+ │    178  +     - ### Module X: [Module Name]                                                       │
+ │    179  +     - Provide a 2-4 sentence description.                                               │
+ │    180  +     - List the key skills or tools to master.                                           │
+ │    181  +     - For each item, provide direct links to high-quality free resources Or almost
+                   free. Prioritizeofficial documentation, interactive tutorials, and in-depth guides.                     │
+ │    182  +                                                                                         │
+ │    183  + ## ✨ Specializations & Advanced Topics (Optional)                                       │
+ │    184  + - If applicable to the role, create 1-4 modules on common specializations or advanced   │
+ │           areas.                                                                                  │
+ │    185  + - Describe what each specialization involves and list key skills with corresponding     │
+ │           resources.                                                                              │
+ │    186  +                                                                                         │
+ │    187  + ## 🚀 Portfolio-Ready Capstone Project                                                  │
+ │    188  + - ### Project: Build a [Relevant Project Name]                                          │
+ │    189  + - **Objective:** A 1-2 sentence summary of what the project will achieve and what       │
+ │           skills it will demonstrate.                                                             │
+ │    190  + - **Core Requirements:** A list of 5-7 key features or functionalities the project      │
+ │           must have.                                                                              │
+ │    191  + - **Suggested Steps:** A high-level, step-by-step guide to building the project.        │
+ │    192  + - **Example:** * 1. **Setup:** Initialize the project environment and version control.  │
+ │    193  +                                                                                         │
+ │    194  + ## 💼 Career & Interview Prep                                                           │
+ │    195  + - ### Preparing for the Job Market                                                      │
+ │    196  + - List 3-5 essential non-technical tips for a ${jobTitle}.                              │
+ │    197  + - Include topics like portfolio presentation, networking on platforms like LinkedIn,    │
+ │           and common interview question patterns for this role.                                   │
+ │    198  + - Provide one link to a high-quality resource for technical interview preparation       │
+ │           (e.g., a guide on LeetCode, a YouTube series on system design interviews).`;            │
+ │    199  +                                                                                         │
+ │    200                       
 
                     // **THIS IS THE CRUCIAL CHANGE**
                     // We call our own secure function, not Google's API directly.
